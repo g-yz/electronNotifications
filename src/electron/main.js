@@ -1,4 +1,10 @@
-const { app, BrowserWindow, ipcMain, Notification } = require("electron");
+const {
+  app,
+  BrowserWindow,
+  ipcMain,
+  Notification,
+  nativeImage,
+} = require("electron");
 
 const path = require("path");
 
@@ -15,7 +21,7 @@ const createWindow = () => {
     width: 800,
     height: 600,
     webPreferences: {
-      nodeIntegration: false,
+      nodeIntegration: true,
       worldSafeExecuteJavaScript: true,
       contextIsolation: true,
       preload: path.join(__dirname, "preload.js"),
@@ -34,29 +40,41 @@ ipcMain.on("notify", (_, message) => {
   new Notification({
     title: "Notification",
     body: message, // toastXml: `
-    toastXml: `
-    <toast launch="myapp:action=navigate&amp;contentId=351" activationType="protocol">
-      <visual>
-          <binding template="ToastGeneric">
-              <text>Hello world</text>
-              <text>Hey, wanna dress up as wizards and ride around on hoverboards?</text>
-              <image placement='appLogoOverride' src='https://picsum.photos/48?image=883' hint-crop='circle'/>
-          </binding>
-      </visual>
-      <actions>
-          <action
-              content="See more details"
-              arguments="myapp:action=viewDetails&amp;contentId=351"
-              activationType="protocol"/>
+    icon: "https://upload.wikimedia.org/wikipedia/commons/6/63/Icon_Bird_512x512.png",
+    // icon: path.join(__dirname, "logo512.png"),
+    // icon: "https://freepngimg.com/static/img/twitter.png",
+    // toastXml: `
+    // <toast launch="myapp:action=navigate&amp;contentId=351" activationType="protocol">
+    //   <visual>
+    //       <binding template="ToastGeneric">
+    //           <text>Hello world</text>
+    //           <text>Hey, wanna dress up as wizards and ride around on hoverboards?</text>
+    //           <image placement='appLogoOverride' src="${path.join(
+    //             __dirname,
+    //             "Icon_Bird_512x512.png"
+    //           )}" hint-crop='circle'/>
+    //       </binding>
+    //   </visual>
+    //   <actions>
+    //       <action
+    //           content="See more details"
+    //           arguments="myapp:action=viewDetails&amp;contentId=351"
+    //           activationType="protocol"/>
 
-          <action
-              content="Remind me later"
-              arguments="myapp:action=remindlater&amp;contentId=351"
-              activationType="protocol"/>
-      </actions>
-    </toast>`,
+    //       <action
+    //           content="Remind me later"
+    //           arguments="myapp:action=remindlater&amp;contentId=351"
+    //           activationType="protocol"/>
+    //   </actions>
+    // </toast>`,
   }).show();
 });
+
+if (process.platform === "win32") {
+  const iconPath = "https://picsum.photos/48?image=883";
+  let icon = nativeImage.createFromPath(iconPath);
+  app.setAppUserModelId(app.name, icon);
+}
 
 app.on("ready", createWindow);
 
